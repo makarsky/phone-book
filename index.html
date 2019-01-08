@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Телефонная книга</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.5.21/dist/vue.js"></script>
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
+    crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
+    crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
+    crossorigin="anonymous">
+  <link rel="stylesheet" href="app.css">
+</head>
+
+<body>
+  <div id="app" class="container">
+    <div class="row">
+      <div class="col-sm-12 text-center">
+        <h1><i class="fas fa-address-book"></i> Телефонная книга</h1>
+        <hr>
+      </div>
+    </div>
+
+    <div>
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="card">
+            <div class="card-header">
+              <h4>Добавить контакт</h4>
+            </div>
+            <div class="card-body">
+              <form @submit.prevent="addContact">
+                <div class="form-group">
+                  <label for="name">ФИО</label>
+                  <input type="text" id="name" class="form-control" placeholder="Петров Пётр Петрович" v-model="currentItem.name">
+                </div>
+
+                <div class="form-group">
+                  <label for="phone">Телефон</label>
+                  <input type="text" id="phone" class="form-control" placeholder="+375291112233" v-model="currentItem.phone">
+                </div>
+
+                <div class="form-group">
+                  <button class="btn btn-success" type="submit">
+                    <i class="fas fa-plus"></i> Добавить
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="card">
+            <div class="card-header">
+              <h4>Контакты ({{ phoneBook.length }})</h4>
+            </div>
+            <div class="card-body">
+              <div v-if="phoneBook.length > 0">
+                <table class="table">
+                  <tr v-for="(contact, index) in sortNames" :key="contact.phone">
+                    <td>
+                      <div>{{ contact.name }}</div>
+                      <div class="text-muted ml-2">{{ contact.phone }}</div>
+                    </td>
+                    <td class="align-middle">
+                      <button class="btn btn-primary" data-toggle="modal" data-target="#myModal" @click="setContactToEdit(contact, index)">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                    </td>
+                    <td class="align-middle">
+                      <button class="btn btn-danger" data-toggle="modal" data-target="#deleteModal" @click="setContactToEdit(contact, index)">
+                        <i class="fas fa-trash-alt"></i>
+                      </button>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+              <div v-else class="text-center">
+                Нет контактов...
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="myModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+
+          <div class="modal-header">
+            <h4 class="modal-title">Редактирование контакта</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+
+          <div class="modal-body">
+            <form @submit.prevent="addContact">
+              <div class="form-group">
+                <label for="editName">ФИО</label>
+                <input type="text" id="editName" class="form-control" placeholder="Петров Пётр Петрович" v-model="contactToEdit.name">
+              </div>
+
+              <div class="form-group">
+                <label for="editPhone">Телефон</label>
+                <input type="text" id="editPhone" class="form-control" placeholder="+375291112233" v-model="contactToEdit.phone">
+              </div>
+
+              <div class="form-group">
+                <div class="row text-center">
+                  <div class="col">
+                    <button type="submit" class="btn btn-success" @click="updateContact" data-toggle="modal"
+                      data-target="#myModal">Сохранить</button>
+                  </div>
+                  <div class="col">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Отмена</button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="deleteModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+
+          <div class="modal-header">
+            <h4 class="modal-title">Удалить контакт?</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+
+          <div class="modal-body">
+            <div class="text-center">{{ contactToEdit.name }}</div>
+            <div class="row text-center">
+              <div class="col">
+                <button type="submit" class="btn btn-success" @click="removeContact" data-toggle="modal" data-target="#deleteModal">Да</button>
+              </div>
+              <div class="col">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Отмена</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
