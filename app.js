@@ -20,6 +20,7 @@ var vm1 = new Vue({
         },
         updateContact() {
             this.phoneBook.splice(this.indexToEdit, 1, this.contactToEdit);
+            this.contactToEdit = { name: '', phone: '' };
         },
         removeContact() {
             this.phoneBook.splice(this.indexToEdit, 1);

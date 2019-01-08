@@ -106,7 +106,7 @@
           </div>
 
           <div class="modal-body">
-            <form @submit.prevent="addContact">
+            <form @submit.prevent="updateContact">
               <div class="form-group">
                 <label for="editName">ФИО</label>
                 <input type="text" id="editName" class="form-control" placeholder="Петров Пётр Петрович" v-model="contactToEdit.name">
@@ -120,7 +120,7 @@
               <div class="form-group">
                 <div class="row text-center">
                   <div class="col">
-                    <button type="submit" class="btn btn-success" @click="updateContact" data-toggle="modal"
+                    <button type="submit" class="btn btn-success" data-toggle="modal"
                       data-target="#myModal">Сохранить</button>
                   </div>
                   <div class="col">
