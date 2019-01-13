@@ -145,6 +145,154 @@
       ],
       "value": ""
     }]
+  }, {
+    "id": "36be6f2c-fb6b-4e92-ba2a-689350a9d6a2",
+    "name": "EditContact",
+    "commands": [{
+      "id": "9f5e4420-4ef1-4e34-95bf-31c014f48518",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "b8b07eea-3b7f-42fa-a702-b5149719459e",
+      "comment": "",
+      "command": "click",
+      "target": "css=tr:nth-child(6) .btn-primary > .fas",
+      "targets": [
+        ["css=tr:nth-child(6) .btn-primary > .fas", "css:finder"],
+        ["xpath=//div[@id='app']/div[2]/div[2]/div/div/div[2]/div/table/tbody/tr[6]/td[2]/button/i", "xpath:idRelative"],
+        ["xpath=//tr[6]/td[2]/button/i", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "6e590648-c228-4967-a825-ecc6ea0fcbc9",
+      "comment": "",
+      "command": "click",
+      "target": "id=editName",
+      "targets": [
+        ["id=editName", "id"],
+        ["css=#editName", "css"],
+        ["css=#editName", "css:finder"],
+        ["xpath=//input[@id='editName']", "xpath:attributes"],
+        ["xpath=//div[@id='myModal']/div/div/div[2]/form/div/input", "xpath:idRelative"],
+        ["xpath=//div[3]/div/div/div[2]/form/div/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "2cc03ee7-92c9-4849-b611-9b51734357b6",
+      "comment": "",
+      "command": "type",
+      "target": "id=editName",
+      "targets": [
+        ["id=editName", "id"],
+        ["css=#editName", "css"],
+        ["css=#editName", "css:finder"],
+        ["xpath=//input[@id='editName']", "xpath:attributes"],
+        ["xpath=//div[@id='myModal']/div/div/div[2]/form/div/input", "xpath:idRelative"],
+        ["xpath=//div[3]/div/div/div[2]/form/div/input", "xpath:position"]
+      ],
+      "value": "Иван2"
+    }, {
+      "id": "deb41641-7574-4cfd-85b5-28b37d8494fa",
+      "comment": "",
+      "command": "click",
+      "target": "id=editPhone",
+      "targets": [
+        ["id=editPhone", "id"],
+        ["css=#editPhone", "css"],
+        ["css=#editPhone", "css:finder"],
+        ["xpath=//input[@id='editPhone']", "xpath:attributes"],
+        ["xpath=//div[@id='myModal']/div/div/div[2]/form/div[2]/input", "xpath:idRelative"],
+        ["xpath=//div[3]/div/div/div[2]/form/div[2]/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "3fa54260-e734-4e0e-aae9-876f1ed73a4a",
+      "comment": "",
+      "command": "type",
+      "target": "id=editPhone",
+      "targets": [
+        ["id=editPhone", "id"],
+        ["css=#editPhone", "css"],
+        ["css=#editPhone", "css:finder"],
+        ["xpath=//input[@id='editPhone']", "xpath:attributes"],
+        ["xpath=//div[@id='myModal']/div/div/div[2]/form/div[2]/input", "xpath:idRelative"],
+        ["xpath=//div[3]/div/div/div[2]/form/div[2]/input", "xpath:position"]
+      ],
+      "value": "+375001112234"
+    }, {
+      "id": "a89bde82-dfdd-40d2-8840-e6439af3a7d5",
+      "comment": "",
+      "command": "click",
+      "target": "css=div.col > button.btn.btn-success",
+      "targets": [
+        ["css=div.col > button.btn.btn-success", "css"],
+        ["css=.row:nth-child(1) > .col > .btn-success", "css:finder"],
+        ["xpath=(//button[@type='submit'])[2]", "xpath:attributes"],
+        ["xpath=//div[@id='myModal']/div/div/div[2]/form/div[3]/div/div/button", "xpath:idRelative"],
+        ["xpath=//div[3]/div/div/button", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "b1042d68-bc01-40be-aa2f-1325a7c3cda0",
+      "comment": "",
+      "command": "verifyText",
+      "target": "css=tr:nth-child(6) div:nth-child(1)",
+      "targets": [
+        ["css=tr:nth-child(6) div:nth-child(1)", "css:finder"],
+        ["xpath=//div[@id='app']/div[2]/div[2]/div/div/div[2]/div/table/tbody/tr[6]/td/div", "xpath:idRelative"],
+        ["xpath=//tr[6]/td/div", "xpath:position"]
+      ],
+      "value": "Иван2"
+    }, {
+      "id": "f1a44af3-d8f6-48af-983e-b1576b233de0",
+      "comment": "",
+      "command": "verifyText",
+      "target": "css=tr:nth-child(6) .text-muted",
+      "targets": [
+        ["css=tr:nth-child(6) .text-muted", "css:finder"],
+        ["xpath=//div[@id='app']/div[2]/div[2]/div/div/div[2]/div/table/tbody/tr[6]/td/div[2]", "xpath:idRelative"],
+        ["xpath=//tr[6]/td/div[2]", "xpath:position"]
+      ],
+      "value": "+375001112234"
+    }]
+  }, {
+    "id": "2bfd4c68-3dd5-4c99-b5dc-161f915f6c77",
+    "name": "RemoveContact",
+    "commands": [{
+      "id": "d4ed1bb0-b5d8-46f4-9b97-9ea82fcf63c2",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "568d3cad-b9b5-4fd9-9430-91666044f5c8",
+      "comment": "",
+      "command": "click",
+      "target": "css=tr:nth-child(6) .btn-danger > .fas",
+      "targets": [
+        ["css=tr:nth-child(6) .btn-danger > .fas", "css:finder"],
+        ["xpath=//div[@id='app']/div[2]/div[2]/div/div/div[2]/div/table/tbody/tr[6]/td[3]/button/i", "xpath:idRelative"],
+        ["xpath=//tr[6]/td[3]/button/i", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "3314e2ff-b550-4745-a1de-99961bdcb1aa",
+      "comment": "",
+      "command": "click",
+      "target": "css=div.modal-body > div.row.text-center > div.col > button.btn.btn-success",
+      "targets": [
+        ["css=div.modal-body > div.row.text-center > div.col > button.btn.btn-success", "css"],
+        ["css=.row:nth-child(2) .btn-success", "css:finder"],
+        ["xpath=(//button[@type='submit'])[3]", "xpath:attributes"],
+        ["xpath=//div[@id='deleteModal']/div/div/div[2]/div[2]/div/button", "xpath:idRelative"],
+        ["xpath=//div[2]/div/button", "xpath:position"]
+      ],
+      "value": ""
+    }]
   }],
   "suites": [{
     "id": "cdc48e07-14c2-4677-8f40-99b51147201d",
