@@ -19,6 +19,7 @@ var vm1 = new Vue({
             this.contactToEdit.phone = contact.phone;
         },
         updateContact() {
+            return false;
             this.phoneBook.splice(this.indexToEdit, 1, this.contactToEdit);
             this.contactToEdit = { name: '', phone: '' };
         },
@@ -28,9 +29,15 @@ var vm1 = new Vue({
         isInputValid() {
             this.currentItem.name = this.currentItem.name.trim();
             this.currentItem.phone = this.currentItem.phone.trim();
-            const phoneCopies = this.phoneBook.filter(contact => contact.phone === this.currentItem.phone);
+            const contact = this.phoneBook.find(contact => contact.phone === this.currentItem.phone);
 
-            return this.currentItem.name.length > 0 && this.currentItem.phone.length > 0 && phoneCopies.length === 0;
+            if (this.currentItem.name.length <= 0 || this.currentItem.phone.length <= 0) {
+                alert('All inputs must be filled');
+            } else if (contact) {
+                alert('This number is already on the list');
+            }
+
+            return this.currentItem.name.length > 0 && this.currentItem.phone.length > 0 && !contact;
         }
     },
     computed: {
