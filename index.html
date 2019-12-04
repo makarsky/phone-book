@@ -22,21 +22,39 @@
 </head>
 
 <body>
-  <div id="app" class="container">
+  <div id="app" class="container col-sm-8 col-lg-6">
     <div class="row">
-      <div class="col-sm-12 text-center">
-        <h2><i class="fas fa-address-book"></i> Contacts</h2>
-        <hr>
+      <div class="col-8">
+        <h3><i class="fas fa-address-book"></i> Contacts</h3>
+      </div>
+      <div class="col-4 text-right">
+        <button class="btn btn-success">
+          <i class="fas fa-plus"></i>
+        </button>
+      </div>
+      <hr>
+    </div>
+
+    <div class="row d-block sticky-top mt-0">
+      <div class="">
+        <div class="bg-white">
+          <div class="card-body d-flex p-3 pl-3 pr-3">
+            <div class="d-flex align-items-center mr-2 ml-2">
+              <i class="fas fa-search"></i>
+            </div>
+            <div class="flex-grow-1">
+              <input type="text" id="name" class="form-control" placeholder="Search..." v-model="currentItem.name">
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
     <div>
-      <div class="row">
-        <div class="col-sm-12">
+      <div class="row mt-0">
+        <div class="col-12">
           <div class="card">
-            <div class="card-header">
-              <h4>Add</h4>
-            </div>
+            <div class="card-header">New</div>
             <div class="card-body">
               <form @submit.prevent="addContact">
                 <div class="form-group">
@@ -50,9 +68,7 @@
                 </div>
 
                 <div class="form-group">
-                  <button class="btn btn-success" type="submit">
-                    <i class="fas fa-plus"></i> Add
-                  </button>
+                  <button class="btn btn-success" type="submit">Save</button>
                 </div>
               </form>
             </div>
@@ -61,28 +77,37 @@
       </div>
 
       <div class="row">
-        <div class="col-sm-12">
+        <div class="col-12">
           <div class="card">
             <div class="card-header">
-              <h4>List ({{ phoneBook.length }})</h4>
+              <div class="row mt-0">
+                <div class="col-9">
+                  Total ({{ phoneBook.length }})
+                </div>
+                <div class="col-3 text-right">
+                  <span class="m-2">
+                    <i class="fas fa-sort-up"></i>
+                  </span>
+                </div>
+              </div>
             </div>
             <div class="card-body">
               <div v-if="phoneBook.length > 0">
                 <table class="table">
                   <tr v-for="(contact, index) in sortNames" :key="contact.phone">
-                    <td>
+                    <td class="col-10">
                       <div>{{ contact.name }}</div>
                       <div class="text-muted ml-2">{{ contact.phone }}</div>
                     </td>
-                    <td class="align-middle">
-                      <button class="btn btn-primary" data-toggle="modal" data-target="#myModal" @click="setContactToEdit(contact, index)">
+                    <td class="col-1 align-middle">
+                      <div class="m-2" data-toggle="modal" data-target="#myModal" @click="setContactToEdit(contact, index)">
                         <i class="fas fa-edit"></i>
-                      </button>
+                      </div>
                     </td>
-                    <td class="align-middle">
-                      <button class="btn btn-danger" data-toggle="modal" data-target="#deleteModal" @click="setContactToEdit(contact, index)">
+                    <td class="col-1 align-middle">
+                      <div class="m-2" data-toggle="modal" data-target="#deleteModal" @click="setContactToEdit(contact, index)">
                         <i class="fas fa-trash-alt"></i>
-                      </button>
+                      </div>
                     </td>
                   </tr>
                 </table>
@@ -101,7 +126,7 @@
         <div class="modal-content">
 
           <div class="modal-header">
-            <h4 class="modal-title">Edit</h4>
+            <span class="modal-title">Edit contact</span>
             <button type="button" class="close" data-dismiss="modal">&times;</button>
           </div>
 
@@ -123,9 +148,6 @@
                     <button type="submit" class="btn btn-success" data-toggle="modal"
                       data-target="#myModal">Save</button>
                   </div>
-                  <div class="col">
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-                  </div>
                 </div>
               </div>
             </form>
@@ -139,7 +161,7 @@
         <div class="modal-content">
 
           <div class="modal-header">
-            <h4 class="modal-title">Delete?</h4>
+            <span class="modal-title">Delete?</span>
             <button type="button" class="close" data-dismiss="modal">&times;</button>
           </div>
 
@@ -147,10 +169,7 @@
             <div class="text-center">{{ contactToEdit.name }}</div>
             <div class="row text-center">
               <div class="col">
-                <button type="submit" class="btn btn-success" @click="removeContact" data-toggle="modal" data-target="#deleteModal">Yes</button>
-              </div>
-              <div class="col">
-                <button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
+                <button type="submit" class="btn btn-danger" @click="removeContact" data-toggle="modal" data-target="#deleteModal">Delete</button>
               </div>
             </div>
           </div>
