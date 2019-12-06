@@ -28,7 +28,7 @@
         <h3><i class="fas fa-address-book"></i> Contacts</h3>
       </div>
       <div class="col-4 text-right">
-        <button class="btn btn-success">
+        <button class="btn btn-success" data-toggle="modal" data-target="#addModal">
           <i class="fas fa-plus"></i>
         </button>
       </div>
@@ -36,92 +36,91 @@
     </div>
 
     <div class="row d-block sticky-top mt-0">
-      <div class="">
-        <div class="bg-white">
-          <div class="card-body d-flex p-3 pl-3 pr-3">
-            <div class="d-flex align-items-center mr-2 ml-2">
-              <i class="fas fa-search"></i>
-            </div>
-            <div class="flex-grow-1">
-              <input type="text" id="name" class="form-control" placeholder="Search..." v-model="currentItem.name">
-            </div>
+      <div class="bg-white">
+        <div class="card-body d-flex p-3 pl-3 pr-3">
+          <div class="d-flex align-items-center mr-3 ml-2">
+            <i class="fas fa-search"></i>
+          </div>
+          <div class="flex-grow-1">
+            <input type="text" id="search" class="form-control" placeholder="Search...">
           </div>
         </div>
       </div>
     </div>
 
-    <div>
-      <div class="row mt-0">
-        <div class="col-12">
-          <div class="card">
-            <div class="card-header">New</div>
-            <div class="card-body">
+    <div class="row mt-0">
+      <div class="col-12">
+        <div class="p-2 pl-3 pr-3">
+          <div class="row mt-0">
+            <div class="col-9">
+              <h6>Total ({{ phoneBook.length }})</h6>
+            </div>
+            <div class="col-3 text-right">
+              <span class="m-2">
+                <i class="fas fa-sort-up"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="mt-2">
+          <table class="table" v-if="phoneBook.length > 0">
+            <tr v-for="(contact, index) in sortNames" :key="contact.phone">
+              <td class="col-10">
+                <div>{{ contact.name }}</div>
+                <div class="text-muted ml-2">{{ contact.phone }}</div>
+              </td>
+              <td class="col-1 align-middle">
+                <div class="m-2" data-toggle="modal" data-target="#editModal" @click="setContactToEdit(contact, index)">
+                  <i class="fas fa-edit"></i>
+                </div>
+              </td>
+              <td class="col-1 align-middle">
+                <div class="m-2" data-toggle="modal" data-target="#deleteModal" @click="setContactToEdit(contact, index)">
+                  <i class="fas fa-trash-alt"></i>
+                </div>
+              </td>
+            </tr>
+          </table>
+          <div v-else class="text-center">
+            No contacts...
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="addModal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+  
+            <div class="modal-header">
+              <span class="modal-title">New</span>
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+  
+            <div class="modal-body">
               <form @submit.prevent="addContact">
                 <div class="form-group">
                   <label for="name">Name</label>
                   <input type="text" id="name" class="form-control" placeholder="John Doe" v-model="currentItem.name">
                 </div>
-
+  
                 <div class="form-group">
                   <label for="phone">Number</label>
-                  <input type="text" id="phone" class="form-control" placeholder="+375291112233" v-model="currentItem.phone">
+                  <input type="text" id="phone" class="form-control" placeholder="+375 29 1112233" v-model="currentItem.phone">
                 </div>
-
+  
                 <div class="form-group">
-                  <button class="btn btn-success" type="submit">Save</button>
+                  <button class="btn btn-success" type="submit" data-toggle="modal"
+                  data-target="#addModal">Save</button>
                 </div>
               </form>
             </div>
           </div>
         </div>
       </div>
-
-      <div class="row">
-        <div class="col-12">
-          <div class="card">
-            <div class="card-header">
-              <div class="row mt-0">
-                <div class="col-9">
-                  Total ({{ phoneBook.length }})
-                </div>
-                <div class="col-3 text-right">
-                  <span class="m-2">
-                    <i class="fas fa-sort-up"></i>
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div v-if="phoneBook.length > 0">
-                <table class="table">
-                  <tr v-for="(contact, index) in sortNames" :key="contact.phone">
-                    <td class="col-10">
-                      <div>{{ contact.name }}</div>
-                      <div class="text-muted ml-2">{{ contact.phone }}</div>
-                    </td>
-                    <td class="col-1 align-middle">
-                      <div class="m-2" data-toggle="modal" data-target="#myModal" @click="setContactToEdit(contact, index)">
-                        <i class="fas fa-edit"></i>
-                      </div>
-                    </td>
-                    <td class="col-1 align-middle">
-                      <div class="m-2" data-toggle="modal" data-target="#deleteModal" @click="setContactToEdit(contact, index)">
-                        <i class="fas fa-trash-alt"></i>
-                      </div>
-                    </td>
-                  </tr>
-                </table>
-              </div>
-              <div v-else class="text-center">
-                No contacts...
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
 
-    <div class="modal fade" id="myModal">
+    <div class="modal fade" id="editModal">
       <div class="modal-dialog">
         <div class="modal-content">
 
@@ -134,19 +133,19 @@
             <form @submit.prevent="updateContact">
               <div class="form-group">
                 <label for="editName">Name</label>
-                <input type="text" id="editName" class="form-control" placeholder="Петров Пётр Петрович" v-model="contactToEdit.name">
+                <input type="text" id="editName" class="form-control" placeholder="John Doe" v-model="contactToEdit.name">
               </div>
 
               <div class="form-group">
                 <label for="editPhone">Number</label>
-                <input type="text" id="editPhone" class="form-control" placeholder="+375291112233" v-model="contactToEdit.phone">
+                <input type="text" id="editPhone" class="form-control" placeholder="+375 29 1112233" v-model="contactToEdit.phone">
               </div>
 
               <div class="form-group">
                 <div class="row text-center">
                   <div class="col">
                     <button type="submit" class="btn btn-success" data-toggle="modal"
-                      data-target="#myModal">Save</button>
+                      data-target="#editModal">Save</button>
                   </div>
                 </div>
               </div>
