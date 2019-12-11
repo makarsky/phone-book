@@ -5,24 +5,73 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="description" content="Contacts App (Vue, Bootstrap 4)">
   <title>Contacts</title>
-  <script src="https://cdn.jsdelivr.net/npm/vue@2.5.21/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js"></script>
 
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
-    crossorigin="anonymous">
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+    integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
     crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"
+    integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
     crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
+    integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
     crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
-    crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
+    integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
   <link rel="stylesheet" href="app.css">
 </head>
 
 <body>
+
+  <script type="text/x-template" id="contact-modal">
+    <div class="modal fade">
+      <div class="modal-dialog">
+        <div class="modal-content">
+
+          <div class="modal-header">
+            <span class="modal-title">
+              <slot name="modal-title">
+                Title
+              </slot>
+            </span>
+            <button type="button" class="close" @click="closeModal()">&times;</button>
+          </div>
+
+          <div class="modal-body">
+            <slot name="modal-body">
+              Content
+            </slot>
+            <div class="row text-center">
+              <div class="col">
+                <confirm-button class="btn" :class="{ 'btn-danger': isDangerous, 'btn-success': !isDangerous }" @confirm="doConfirm()">{{confirmButtonLabel}}</confirm-button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </script>
+
+  <script type="text/x-template" id="contact-deletion-modal-template">
+    <contact-modal @confirm="doConfirm()" confirm-button-label="Delete" :is-dangerous="true">
+      <template v-slot:modal-title>
+        Delete?
+      </template>
+      <template v-slot:modal-body>
+        <div class="text-center">{{ contactName }}</div>
+      </template>
+    </contact-modal>
+  </script>
+
   <div id="app" class="container col-sm-8 col-lg-6">
+
+    <contact-deletion-modal id="contact-deletion-modal" :contact-name="contactToEdit.name" @confirm="removeContact()">
+    </contact-deletion-modal>
+
     <div class="row">
       <div class="col-8">
         <h3><i class="fas fa-address-book"></i> Contacts</h3>
@@ -75,7 +124,7 @@
                 </div>
               </td>
               <td class="col-1 align-middle">
-                <div class="m-2" data-toggle="modal" data-target="#deleteModal" @click="setContactToEdit(contact, index)">
+                <div class="m-2" @click="setContactToRemove(contact)">
                   <i class="fas fa-trash-alt"></i>
                 </div>
               </td>
@@ -89,92 +138,68 @@
     </div>
 
     <div class="modal fade" id="addModal">
-        <div class="modal-dialog">
-          <div class="modal-content">
-  
-            <div class="modal-header">
-              <span class="modal-title">New</span>
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-            </div>
-  
-            <div class="modal-body">
-              <form @submit.prevent="addContact">
-                <div class="form-group">
-                  <label for="name">Name</label>
-                  <input type="text" id="name" class="form-control" placeholder="John Doe" v-model="currentItem.name">
-                </div>
-  
-                <div class="form-group">
-                  <label for="phone">Number</label>
-                  <input type="text" id="phone" class="form-control" placeholder="+375 29 1112233" v-model="currentItem.phone">
-                </div>
-  
-                <div class="form-group">
-                  <button class="btn btn-success" type="submit" data-toggle="modal"
-                  data-target="#addModal">Save</button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="modal fade" id="editModal">
       <div class="modal-dialog">
         <div class="modal-content">
 
           <div class="modal-header">
-            <span class="modal-title">Edit contact</span>
+            <span class="modal-title">New</span>
             <button type="button" class="close" data-dismiss="modal">&times;</button>
           </div>
 
           <div class="modal-body">
-            <form @submit.prevent="updateContact">
+            <form @submit.prevent="addContact">
               <div class="form-group">
-                <label for="editName">Name</label>
-                <input type="text" id="editName" class="form-control" placeholder="John Doe" v-model="contactToEdit.name">
+                <label for="name">Name</label>
+                <input type="text" id="name" class="form-control" placeholder="John Doe" v-model="currentItem.name">
               </div>
 
               <div class="form-group">
-                <label for="editPhone">Number</label>
-                <input type="text" id="editPhone" class="form-control" placeholder="+375 29 1112233" v-model="contactToEdit.phone">
+                <label for="phone">Number</label>
+                <input type="text" id="phone" class="form-control" placeholder="+375 29 1112233"
+                  v-model="currentItem.phone">
               </div>
 
-              <div class="form-group">
-                <div class="row text-center">
-                  <div class="col">
-                    <button type="submit" class="btn btn-success" data-toggle="modal"
-                      data-target="#editModal">Save</button>
-                  </div>
-                </div>
+              <div class="form-group text-center">
+                <button class="btn btn-success" type="submit" data-toggle="modal" data-target="#addModal">Save</button>
               </div>
             </form>
           </div>
         </div>
       </div>
     </div>
+  </div>
 
-    <div class="modal fade" id="deleteModal">
-      <div class="modal-dialog">
-        <div class="modal-content">
+  <div class="modal fade" id="editModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
 
-          <div class="modal-header">
-            <span class="modal-title">Delete?</span>
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-          </div>
+        <div class="modal-header">
+          <span class="modal-title">Edit contact</span>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
 
-          <div class="modal-body">
-            <div class="text-center">{{ contactToEdit.name }}</div>
-            <div class="row text-center">
-              <div class="col">
-                <button type="submit" class="btn btn-danger" @click="removeContact" data-toggle="modal" data-target="#deleteModal">Delete</button>
-              </div>
+        <div class="modal-body">
+          <form @submit.prevent="updateContact">
+            <div class="form-group">
+              <label for="editName">Name</label>
+              <input type="text" id="editName" class="form-control" placeholder="John Doe" v-model="contactToEdit.name">
             </div>
-          </div>
+
+            <div class="form-group">
+              <label for="editPhone">Number</label>
+              <input type="text" id="editPhone" class="form-control" placeholder="+375 29 1112233"
+                v-model="contactToEdit.phone">
+            </div>
+
+            <div class="form-group text-center">
+              <button type="submit" class="btn btn-success" data-toggle="modal" data-target="#editModal">Save</button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
+  </div>
+
   </div>
 
   <script src="app.js"></script>
