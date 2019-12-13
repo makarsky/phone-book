@@ -47,7 +47,7 @@
             </slot>
             <div class="row text-center">
               <div class="col">
-                <confirm-button class="btn" :class="{ 'btn-danger': isDangerous, 'btn-success': !isDangerous }" @confirm="doConfirm()">{{confirmButtonLabel}}</confirm-button>
+                <confirm-button :is-dangerous="isDangerous" @confirm="doConfirm()">{{confirmButtonLabel}}</confirm-button>
               </div>
             </div>
           </div>
@@ -56,7 +56,7 @@
     </div>
   </script>
 
-  <script type="text/x-template" id="contact-deletion-modal-template">
+  <script type="text/x-template" id="contact-removal-modal-template">
     <contact-modal @confirm="doConfirm()" confirm-button-label="Delete" :is-dangerous="true">
       <template v-slot:modal-title>
         Delete?
@@ -67,10 +67,37 @@
     </contact-modal>
   </script>
 
+  <script type="text/x-template" id="contact-editing-modal-template">
+    <contact-modal @confirm="updateContact()" confirm-button-label="Save" :is-dangerous="false">
+      <template v-slot:modal-title>
+        Edit contact
+      </template>
+      <template v-slot:modal-body>
+        <form @submit.prevent="updateContact">
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" name="name" class="form-control" placeholder="John Doe" v-model="contact.name">
+          </div>
+
+          <div class="form-group">
+            <label for="phone">Number</label>
+            <input type="text" name="phone" class="form-control" placeholder="+375 29 1112233"
+              v-model="contact.phone">
+          </div>
+        </form>
+      </template>
+    </contact-modal>
+  </script>
+
   <div id="app" class="container col-sm-8 col-lg-6">
 
-    <contact-deletion-modal id="contact-deletion-modal" :contact-name="contactToEdit.name" @confirm="removeContact()">
-    </contact-deletion-modal>
+    <contact-removal-modal id="contact-removal-modal" :contact-name="contactToEdit.name" @confirm="removeContact()">
+    </contact-removal-modal>
+
+    <contact-editing-modal id="contact-editing-modal" :contact="contactToEdit" @confirm="updateContact()">
+    </contact-editing-modal>
+
+    <!-- TODO: contact-add-modal -->
 
     <div class="row">
       <div class="col-8">
@@ -119,7 +146,7 @@
                 <div class="text-muted ml-2">{{ contact.phone }}</div>
               </td>
               <td class="col-1 align-middle">
-                <div class="m-2" data-toggle="modal" data-target="#editModal" @click="setContactToEdit(contact, index)">
+                <div class="m-2" @click="setContactToEdit(contact, index)">
                   <i class="fas fa-edit"></i>
                 </div>
               </td>
@@ -164,37 +191,6 @@
               </div>
             </form>
           </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal fade" id="editModal">
-    <div class="modal-dialog">
-      <div class="modal-content">
-
-        <div class="modal-header">
-          <span class="modal-title">Edit contact</span>
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-        </div>
-
-        <div class="modal-body">
-          <form @submit.prevent="updateContact">
-            <div class="form-group">
-              <label for="editName">Name</label>
-              <input type="text" id="editName" class="form-control" placeholder="John Doe" v-model="contactToEdit.name">
-            </div>
-
-            <div class="form-group">
-              <label for="editPhone">Number</label>
-              <input type="text" id="editPhone" class="form-control" placeholder="+375 29 1112233"
-                v-model="contactToEdit.phone">
-            </div>
-
-            <div class="form-group text-center">
-              <button type="submit" class="btn btn-success" data-toggle="modal" data-target="#editModal">Save</button>
-            </div>
-          </form>
         </div>
       </div>
     </div>
