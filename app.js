@@ -1,6 +1,19 @@
 class ContactService {
   constructor() {
     this.contacts = [];
+    this.constraints = {
+      name: {
+        unique: false,
+        empty: false
+      },
+      phone: {
+        unique: true,
+        empty: false
+      }
+    };
+  }
+  getFieldConstraints(field) {
+    return this.constraints[field];
   }
   loadAll() {
     if (localStorage.getItem('contacts')) {
@@ -17,16 +30,19 @@ class ContactService {
   getOneById(id) {
     return this.contacts.find(contact => contact.id === id);
   }
-  addContact(contact) {
-    // TODO: use validator
-    this.contacts.push({id: this.contacts.length, ...contact});
+  saveContact(contact) {
+    if (contact.id) {
+      this.updateContact(contact);
+    } else {
+      this.addContact(contact);
+    }
     this.saveAll();
   }
-  updateContact(id, editedContact) {
-    // TODO: use validator
-    // const result = validate(editedContact);
-    this.contacts.splice(this.contacts.find(contact => contact.id === id), 1, editedContact);
-    this.saveAll();
+  addContact(contact) {
+    this.contacts.push({id: this.contacts.length, ...contact});
+  }
+  updateContact(editedContact) {
+    this.contacts.splice(this.contacts.find(contact => contact.id === editedContact.id), 1, editedContact);
   }
   removeContact(id) {
     this.contacts.splice(this.contacts.find(contact => contact.id === id), 1);
@@ -34,7 +50,43 @@ class ContactService {
   }
 }
 
+class Validator {
+  constructor(service) {
+    this.service = service;
+  }
+  validate(model) {
+    const validation = {
+      isValid: false,
+      messages: [],
+    };
+
+    for (const p in model) {
+      if (p === 'id') continue;
+
+      const constraints = this.service.getFieldConstraints(p);
+
+      if (!constraints.empty && this.isEmpty(model[p])) {
+        validation.isValid = false;
+        validation.messages.push({field: p, message: 'This field must be filled'});
+      }
+      if (constraints.unique && this.isEmptyUnique(model[p])) {
+        validation.isValid = false;
+        validation.messages.push({field: p, message: 'This field must be unique'});
+      }
+    }
+
+    return validation;
+  }
+  isEmpty(value) {
+    return !(value && value.length > 0);
+  }
+  isUnique(field, value) {
+    return !this.service.getList().find(contact => contact[field] === value);
+  }
+}
+
 const service = new ContactService();
+const validator = new Validator(service);
 
 Vue.component('confirmButton', {
   template:
@@ -82,6 +134,7 @@ Vue.component('contactEditingModal', {
   },
   methods: {
     updateContact() {
+      
       this.$emit('confirm');
     }
   }
@@ -93,7 +146,8 @@ new Vue({
     currentItem: { name: '', phone: '' },
     contactToEdit: {},
     phoneBook: [],
-    contactToEditIndex: null
+    contactToEditIndex: null,
+    contactValidation: {}
   },
   methods: {
     addContact() {
