@@ -75,13 +75,23 @@
       <template v-slot:modal-body>
         <div class="form-group">
           <label for="name">Name</label>
-          <input type="text" name="name" class="form-control" placeholder="John Doe" v-model="editedContact.name">
+          <input type="text" name="name" class="form-control" :class="{'is-invalid': errors.name}" placeholder="John Doe" v-model="editedContact.name">
+          <div class="col-12">
+            <small :if="errors.name" class="text-danger">
+              {{errors.name}}
+            </small>  
+          </div>
         </div>
 
         <div class="form-group">
           <label for="phone">Number</label>
-          <input type="text" name="phone" class="form-control" placeholder="+375 29 1112233"
+          <input type="text" name="phone" class="form-control" :class="{'is-invalid': errors.phone}" placeholder="+375 29 1112233"
             v-model="editedContact.phone">
+          <div class="col-12">
+            <small :if="errors.phone" class="text-danger">
+              {{errors.phone}}
+            </small>  
+          </div>
         </div>
       </template>
     </contact-modal>
@@ -141,7 +151,7 @@
         </div>
         <div class="mt-2">
           <table class="table" v-if="phoneBook.length > 0">
-            <tr v-for="(contact, index) in sortNames" :key="contact.phone">
+            <tr v-for="(contact, index) in sortedNames" :key="contact.phone">
               <td class="col-10">
                 <div>{{ contact.name }}</div>
                 <div class="text-muted ml-2">{{ contact.phone }}</div>
