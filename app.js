@@ -27,9 +27,6 @@ class ContactService {
   getList() {
     return this.contacts;
   }
-  getOneById(id) {
-    return this.contacts.find(contact => contact.id === id);
-  }
   saveContact(contact) {
     if (contact.id) {
       this.updateContact(contact);
@@ -39,7 +36,7 @@ class ContactService {
     this.saveAll();
   }
   addContact(contact) {
-    this.contacts.push({id: this.contacts.length, ...contact});
+    this.contacts.push({ id: this.contacts.length, ...contact });
   }
   updateContact(editedContact) {
     this.contacts.splice(this.contacts.find(contact => contact.id === editedContact.id), 1, editedContact);
@@ -56,7 +53,7 @@ class Validator {
   }
   validate(model) {
     const validation = {
-      isValid: false,
+      isValid: true,
       messages: [],
     };
 
@@ -67,11 +64,11 @@ class Validator {
 
       if (!constraints.empty && this.isEmpty(model[p])) {
         validation.isValid = false;
-        validation.messages.push({field: p, message: 'This field must be filled'});
+        validation.messages.push({ field: p, message: 'This field must be filled' });
       }
-      if (constraints.unique && this.isEmptyUnique(model[p])) {
+      if (constraints.unique && !this.isUnique(p, model.id, model[p])) {
         validation.isValid = false;
-        validation.messages.push({field: p, message: 'This field must be unique'});
+        validation.messages.push({ field: p, message: 'This field must be unique' });
       }
     }
 
@@ -80,8 +77,8 @@ class Validator {
   isEmpty(value) {
     return !(value && value.length > 0);
   }
-  isUnique(field, value) {
-    return !this.service.getList().find(contact => contact[field] === value);
+  isUnique(field, id, value) {
+    return !this.service.getList().find(contact => contact[field] === value && contact.id !== id);
   }
 }
 
@@ -102,15 +99,19 @@ Vue.component('contactModal', {
   template: '#contact-modal',
   props: {
     confirmButtonLabel: String,
-    isDangerous: Boolean
+    isDangerous: Boolean,
+    canBeClosed: Boolean
   },
   methods: {
     closeModal() {
       $('.modal').modal('hide');
+      this.$emit('close');
     },
     doConfirm() {
+      if (this.canBeClosed) {
+        this.closeModal();
+      }
       this.$emit('confirm');
-      this.closeModal();
     }
   }
 });
@@ -118,7 +119,8 @@ Vue.component('contactModal', {
 Vue.component('contactRemovalModal', {
   template: '#contact-removal-modal-template',
   props: {
-    contactName: String
+    contactName: String,
+    canBeClosed: Boolean
   },
   methods: {
     doConfirm() {
@@ -132,10 +134,34 @@ Vue.component('contactEditingModal', {
   props: {
     contact: Object
   },
+  data: () => {
+    return {
+      editedContact: {},
+      validation: { isValid: false },
+      canBeClosed: true
+    }
+  },
   methods: {
-    updateContact() {
-      
-      this.$emit('confirm');
+    saveContact() {
+      if (this.validation.isValid) {
+        service.saveContact(this.editedContact);
+        this.$emit('confirm');
+      }
+    },
+    close() {
+      this.$emit('close');
+    }
+  },
+  watch: {
+    contact(contact) {
+      this.editedContact = Vue.util.extend({}, contact);
+    },
+    editedContact: {
+      handler(editedContact) {
+        this.validation = validator.validate(editedContact);
+        this.canBeClosed = this.validation.isValid;
+      },
+      deep: true
     }
   }
 });
@@ -146,25 +172,18 @@ new Vue({
     currentItem: { name: '', phone: '' },
     contactToEdit: {},
     phoneBook: [],
-    contactToEditIndex: null,
     contactValidation: {}
   },
   methods: {
-    addContact() {
-      if (this.isInputValid()) {
-        this.phoneBook.push(this.currentItem);
-        this.currentItem = { name: '', phone: '' };
-      }
-      // this.contactValidation = service.addContact(contact);
+    openContactAddingModal() {
+      $('#contact-adding-modal').modal('show');
     },
-    setContactToEdit(contact, index) {
-      this.contactToEditIndex = index;
-      this.contactToEdit = Vue.util.extend({}, contact);
+    setContactToEdit(contact) {
+      this.contactToEdit = contact;
       $('#contact-editing-modal').modal('show');
     },
-    updateContact() {
-      this.phoneBook.splice(this.contactToEditIndex, 1, this.contactToEdit);
-      // this.contactValidation = service.updateContact(contact);
+    unsetEditedContact() {
+      this.contactToEdit = {};
     },
     setContactToRemove(contact) {
       this.contactToEdit = contact;
@@ -172,19 +191,6 @@ new Vue({
     },
     removeContact() {
       this.phoneBook.splice(this.phoneBook.indexOf(this.contactToEdit), 1);
-    },
-    isInputValid() {
-      this.currentItem.name = this.currentItem.name.trim();
-      this.currentItem.phone = this.currentItem.phone.trim();
-      const contact = this.phoneBook.find(contact => contact.phone === this.currentItem.phone);
-
-      if (this.currentItem.name.length <= 0 || this.currentItem.phone.length <= 0) {
-        alert('All inputs must be filled');
-      } else if (contact) {
-        alert('This number is already on the list');
-      }
-
-      return this.currentItem.name.length > 0 && this.currentItem.phone.length > 0 && !contact;
     }
   },
   computed: {
