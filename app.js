@@ -137,19 +137,35 @@ Vue.component('contactEditingModal', {
   data: () => {
     return {
       editedContact: {},
-      validation: { isValid: false },
-      canBeClosed: true
+      validation: { isValid: false, messages: [] },
+      canBeClosed: true,
+      errors: {}
     }
   },
   methods: {
     saveContact() {
+      this.clearErrors();
+      
       if (this.validation.isValid) {
         service.saveContact(this.editedContact);
         this.$emit('confirm');
+      } else {
+        this.showErrors();
       }
     },
     close() {
+      this.clearErrors();
       this.$emit('close');
+    },
+    clearErrors() {
+      for (const p in this.errors) {
+        this.$set(this.errors, p, null);
+      }
+    },
+    showErrors() {
+      this.validation.messages.forEach(m => {
+        this.$set(this.errors, m.field, m.message);
+      });
     }
   },
   watch: {
@@ -169,13 +185,13 @@ Vue.component('contactEditingModal', {
 new Vue({
   el: '#app',
   data: {
-    currentItem: { name: '', phone: '' },
     contactToEdit: {},
     phoneBook: [],
     contactValidation: {}
   },
   methods: {
     openContactAddingModal() {
+      this.contactToEdit = {};
       $('#contact-adding-modal').modal('show');
     },
     setContactToEdit(contact) {
@@ -194,7 +210,7 @@ new Vue({
     }
   },
   computed: {
-    sortNames() {
+    sortedNames() {
       return this.phoneBook.sort((a, b) => {
         if (a.name > b.name) {
           return 1;
