@@ -41,8 +41,8 @@ class ContactService {
   updateContact(editedContact) {
     this.contacts.splice(this.contacts.find(contact => contact.id === editedContact.id), 1, editedContact);
   }
-  removeContact(id) {
-    this.contacts.splice(this.contacts.find(contact => contact.id === id), 1);
+  removeContact(contact) {
+    this.contacts.splice(this.contacts.indexOf(contact), 1);
     this.saveAll();
   }
 }
@@ -145,7 +145,7 @@ Vue.component('contactEditingModal', {
   methods: {
     saveContact() {
       this.clearErrors();
-      
+
       if (this.validation.isValid) {
         service.saveContact(this.editedContact);
         this.$emit('confirm');
@@ -187,7 +187,8 @@ new Vue({
   data: {
     contactToEdit: {},
     phoneBook: [],
-    contactValidation: {}
+    contactValidation: {},
+    sortInAscendingOrder: true
   },
   methods: {
     openContactAddingModal() {
@@ -206,19 +207,17 @@ new Vue({
       $('#contact-removal-modal').modal('show');
     },
     removeContact() {
-      this.phoneBook.splice(this.phoneBook.indexOf(this.contactToEdit), 1);
+      service.removeContact(this.contactToEdit);
+      // this.phoneBook.splice(this.phoneBook.indexOf(this.contactToEdit), 1);
+    },
+    toggleSortingOrder() {
+      this.sortInAscendingOrder = !this.sortInAscendingOrder;
     }
   },
   computed: {
     sortedNames() {
       return this.phoneBook.sort((a, b) => {
-        if (a.name > b.name) {
-          return 1;
-        }
-        if (a.name < b.name) {
-          return -1;
-        }
-        return 0;
+        return a.name.localeCompare(b.name) * (this.sortInAscendingOrder ? 1 : -1);
       });
     }
   },
