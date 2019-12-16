@@ -84,7 +84,7 @@
 
         <div class="form-group">
           <label for="phone">Number</label>
-          <input type="text" name="phone" class="form-control" :class="{'is-invalid': errors.phone}" placeholder="+375 29 1112233"
+          <input type="number" name="phone" class="form-control" :class="{'is-invalid': errors.phone}" placeholder="+375 29 1112233"
             v-model="editedContact.phone">
           <div class="col-12">
             <small :if="errors.phone" class="text-danger">
@@ -130,6 +130,9 @@
           <div class="flex-grow-1">
             <input type="text" id="search" class="form-control" placeholder="Search..." v-model="searchString">
           </div>
+          <div class="d-flex align-items-center mr-2 ml-3" v-if="searchString" @click="resetSearch()">
+            <i class="fas fa-times"></i>
+          </div>
         </div>
       </div>
     </div>
@@ -139,7 +142,7 @@
         <div class="p-2 px-3">
           <div class="row mt-0">
             <div class="col-9">
-              <h6>Total ({{ phoneBook.length }})</h6>
+              <h6>Total ({{ sortedNames.length }})</h6>
             </div>
             <div class="col-3 text-right">
               <span class="m-2" @click="toggleSortingOrder()">

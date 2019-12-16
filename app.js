@@ -212,6 +212,9 @@ new Vue({
     },
     toggleSortingOrder() {
       this.sortInAscendingOrder = !this.sortInAscendingOrder;
+    },
+    resetSearch() {
+      this.searchString = '';
     }
   },
   computed: {
