@@ -188,7 +188,8 @@ new Vue({
     contactToEdit: {},
     phoneBook: [],
     contactValidation: {},
-    sortInAscendingOrder: true
+    sortInAscendingOrder: true,
+    searchString: ''
   },
   methods: {
     openContactAddingModal() {
@@ -208,7 +209,6 @@ new Vue({
     },
     removeContact() {
       service.removeContact(this.contactToEdit);
-      // this.phoneBook.splice(this.phoneBook.indexOf(this.contactToEdit), 1);
     },
     toggleSortingOrder() {
       this.sortInAscendingOrder = !this.sortInAscendingOrder;
@@ -216,9 +216,15 @@ new Vue({
   },
   computed: {
     sortedNames() {
-      return this.phoneBook.sort((a, b) => {
-        return a.name.localeCompare(b.name) * (this.sortInAscendingOrder ? 1 : -1);
-      });
+      return this.phoneBook
+        .filter((c) => {
+          return this.searchString ?
+            c.name.indexOf(this.searchString) > -1 || c.phone.indexOf(this.searchString) > -1
+            : true
+        })
+        .sort((a, b) => {
+          return a.name.localeCompare(b.name) * (this.sortInAscendingOrder ? 1 : -1);
+        });
     }
   },
   watch: {
