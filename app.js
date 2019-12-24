@@ -36,10 +36,14 @@ class ContactService {
     this.saveAll();
   }
   addContact(contact) {
-    this.contacts.push({ id: this.contacts.length, ...contact });
+    this.contacts.push({ id: + new Date(), ...contact });
   }
   updateContact(editedContact) {
-    this.contacts.splice(this.contacts.find(contact => contact.id === editedContact.id), 1, editedContact);
+    this.contacts.splice(
+      this.contacts.indexOf(
+        this.contacts.find(contact => contact.id === editedContact.id)
+      ), 1, editedContact
+    );
   }
   removeContact(contact) {
     this.contacts.splice(this.contacts.indexOf(contact), 1);
@@ -97,11 +101,6 @@ Vue.component('confirmButton', {
 
 Vue.component('contactModal', {
   template: '#contact-modal',
-  props: {
-    confirmButtonLabel: String,
-    isDangerous: Boolean,
-    canBeClosed: Boolean
-  },
   methods: {
     closeModal() {
       $('.modal').modal('hide');
@@ -113,14 +112,16 @@ Vue.component('contactModal', {
       }
       this.$emit('confirm');
     }
+  },
+  created() {
+    this.$parent.$on('confirm', this.closeModal);
   }
 });
 
 Vue.component('contactRemovalModal', {
   template: '#contact-removal-modal-template',
   props: {
-    contactName: String,
-    canBeClosed: Boolean
+    contactName: String
   },
   methods: {
     doConfirm() {
@@ -138,13 +139,13 @@ Vue.component('contactEditingModal', {
     return {
       editedContact: {},
       validation: { isValid: false, messages: [] },
-      canBeClosed: true,
       errors: {}
     }
   },
   methods: {
     saveContact() {
       this.clearErrors();
+      this.validation = validator.validate(this.editedContact);
 
       if (this.validation.isValid) {
         service.saveContact(this.editedContact);
@@ -171,13 +172,6 @@ Vue.component('contactEditingModal', {
   watch: {
     contact(contact) {
       this.editedContact = Vue.util.extend({}, contact);
-    },
-    editedContact: {
-      handler(editedContact) {
-        this.validation = validator.validate(editedContact);
-        this.canBeClosed = this.validation.isValid;
-      },
-      deep: true
     }
   }
 });
@@ -228,11 +222,6 @@ new Vue({
         .sort((a, b) => {
           return a.name.localeCompare(b.name) * (this.sortInAscendingOrder ? 1 : -1);
         });
-    }
-  },
-  watch: {
-    phoneBook() {
-      service.saveAll();
     }
   },
   mounted() {
