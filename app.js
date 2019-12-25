@@ -216,7 +216,8 @@ new Vue({
       return this.phoneBook
         .filter((c) => {
           return this.searchString ?
-            c.name.indexOf(this.searchString) > -1 || c.phone.indexOf(this.searchString) > -1
+            c.name.toLowerCase().indexOf(this.searchString.toLowerCase()) > -1
+            || c.phone.indexOf(this.searchString) > -1
             : true
         })
         .sort((a, b) => {
