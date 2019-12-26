@@ -60,6 +60,9 @@ class Validator {
       isValid: true,
       messages: [],
     };
+    
+    model.name ? model.name.trim() : model.name = null;
+    model.phone ? model.phone.trim() : model.phone = null;
 
     for (const p in model) {
       if (p === 'id') continue;
