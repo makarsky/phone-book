@@ -89,7 +89,7 @@
 
         <div class="form-group">
           <label for="phone">Number</label>
-          <input type="text" name="phone" class="form-control" :class="{'is-invalid': errors.phone}" placeholder="+375 29 1112233"
+          <input type="tel" name="phone" class="form-control" :class="{'is-invalid': errors.phone}" placeholder="+375 29 1112233"
             v-model="editedContact.phone">
           <div class="col-12">
             <small :if="errors.phone" class="text-danger">
